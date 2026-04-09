@@ -121,4 +121,4 @@ The most challenging aspect was integrating DynamoDB alongside MySQL, requiring 
 
 ## AI Usage
 
-I used AI in order to help generate this README file and some of the initial code structure.
+I used AI in order to help generate this README file and some of the initial code structure. I also used AI to help debug issues with DynamoDB connections and queries.
