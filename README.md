@@ -16,8 +16,7 @@ Any interesting challenges or insights
 Citation of any AI tools used
 ## Overview
 
-A web application for managing music artists and their track information. Users can add, update, delete, and view artists along with their associated tracks from a MySQL database. The application also stores artist preferences in DynamoDB for non-relational data persistence.
-
+A web application for managing music artists and their track information. Users can add, update, delete, and view artists along with their associated tracks from a MySQL database. The application also stores artist preferences in DynamoDB.
 ---
 
 ## Technologies Used
@@ -67,7 +66,7 @@ cs178-flask-app/
 The app is deployed on an AWS EC2 instance. To view the live version:
 
 ```
-http://[your-ec2-public-ip]:8080
+http://44.200.207.114:8080
 ```
 
 ---
@@ -99,11 +98,6 @@ The project uses a music database with the following schema:
 
 The JOIN query used in this project joins Artist, Album, and Track tables to display artist names with their associated track names and prices.
 
-### DynamoDB
-
-- **Table name:** `ArtistPreferences`
-- **Partition key:** `ArtistName`
-- **Used for:** Storing artist genre preferences as non-relational data
 
 ---
 
@@ -122,3 +116,9 @@ The JOIN query used in this project joins Artist, Album, and Track tables to dis
 ## Challenges and Insights
 
 The most challenging aspect was integrating DynamoDB alongside MySQL, requiring different connection patterns and error handling for each database type. The project demonstrated the trade-offs between relational and non-relational databases, with MySQL providing structured querying through JOINs and DynamoDB offering flexible schema-less storage for preferences.
+
+
+
+## AI Usage
+
+I used AI in order to help generate this README file and some of the initial code structure.

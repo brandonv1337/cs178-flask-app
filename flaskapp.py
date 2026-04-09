@@ -5,10 +5,12 @@ app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
 @app.route('/')
+# Home page route
 def home():
     return render_template('home.html')
 
 @app.route('/add-user', methods=['GET', 'POST'])
+# Add new artist with track
 def add_user():
     if request.method == 'POST':
         artist_id = request.form['artist_id']
@@ -33,6 +35,7 @@ def add_user():
         return render_template('add_user.html')
 
 @app.route('/delete-user', methods=['GET', 'POST'])
+# Delete artist by ID
 def delete_user():
     if request.method == 'POST':
         artist_id = request.form['artist_id']
@@ -51,6 +54,7 @@ def delete_user():
         return render_template('delete_user.html')
 
 @app.route('/update-user', methods=['GET', 'POST'])
+# Update artist with new track
 def update_user():
     if request.method == 'POST':
         artist_id = request.form['artist_id']
@@ -77,6 +81,7 @@ def update_user():
         return render_template('update_user.html')
 
 @app.route('/display-users')
+# Display all artists and tracks
 def display_users():
     users_list = execute_query("""
         SELECT ArtistId, Artist.Name AS ArtistName, Track.Name AS TrackName, UnitPrice

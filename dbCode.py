@@ -3,6 +3,7 @@ import creds
 import boto3
 from botocore.exceptions import ClientError
 
+# Get MySQL database connection
 def get_conn():
     conn = pymysql.connect(
         host=creds.host,
@@ -13,6 +14,7 @@ def get_conn():
     )
     return conn
 
+# Execute SELECT query and return results
 def execute_query(query, args=()):
     conn = get_conn()
     cur = conn.cursor()
@@ -22,6 +24,7 @@ def execute_query(query, args=()):
     conn.close()
     return rows
 
+# Execute INSERT, UPDATE, or DELETE query
 def execute_update(query, args=()):
     conn = get_conn()
     cursor = conn.cursor()
@@ -32,6 +35,7 @@ def execute_update(query, args=()):
     conn.close()
     return affected > 0
 
+# Add new artist with track to MySQL
 def add_artist_with_track(artist_id, artist_name, track_name, unit_price):
     conn = get_conn()
     cursor = conn.cursor()
@@ -58,6 +62,7 @@ def add_artist_with_track(artist_id, artist_name, track_name, unit_price):
     conn.close()
     return True
 
+# Delete artist and all related records by ID
 def delete_artist_by_id(artist_id):
     conn = get_conn()
     cursor = conn.cursor()
@@ -89,12 +94,15 @@ def delete_artist_by_id(artist_id):
     conn.close()
     return artist_name
 
+# Get all artists from database
 def get_all_artists():
     return execute_query("SELECT ArtistId, Name AS ArtistName FROM Artist ORDER BY Name")
 
+# Update artist name
 def update_artist(old_name, new_name):
     return execute_update("UPDATE Artist SET Name = %s WHERE Name = %s", (new_name, old_name))
 
+# Update artist and add new track
 def update_artist_by_id(artist_id, artist_name, track_name, unit_price):
     conn = get_conn()
     cursor = conn.cursor()
@@ -126,6 +134,7 @@ def update_artist_by_id(artist_id, artist_name, track_name, unit_price):
     conn.close()
     return old_name
 
+# Get DynamoDB table reference
 def get_dynamodb_table(table_name):
     try:
         dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
@@ -134,6 +143,7 @@ def get_dynamodb_table(table_name):
     except ClientError:
         return None
 
+# Add item to DynamoDB table
 def add_to_dynamodb(table_name, item):
     try:
         table = get_dynamodb_table(table_name)
@@ -144,6 +154,7 @@ def add_to_dynamodb(table_name, item):
     except ClientError:
         return False
 
+# Get item from DynamoDB table
 def get_from_dynamodb(table_name, key):
     try:
         table = get_dynamodb_table(table_name)
@@ -154,6 +165,7 @@ def get_from_dynamodb(table_name, key):
     except ClientError:
         return None
 
+# Update item in DynamoDB table
 def update_dynamodb(table_name, key, update_expression, expression_values):
     try:
         table = get_dynamodb_table(table_name)
@@ -168,6 +180,7 @@ def update_dynamodb(table_name, key, update_expression, expression_values):
     except ClientError:
         return False
 
+# Delete item from DynamoDB table
 def delete_from_dynamodb(table_name, key):
     try:
         table = get_dynamodb_table(table_name)
@@ -178,6 +191,7 @@ def delete_from_dynamodb(table_name, key):
     except ClientError:
         return False
 
+# Scan all items from DynamoDB table
 def scan_dynamodb(table_name):
     try:
         table = get_dynamodb_table(table_name)
