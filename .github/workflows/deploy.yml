@@ -1,18 +1,3 @@
-# .github/workflows/deploy.yml
-# CS178 Auto-Deploy Workflow
-# --------------------------
-# Automatically deploys your Flask app to EC2 whenever you push to main.
-#
-# Before this works, you must add three secrets to your GitHub repo:
-#   Settings → Secrets and variables → Actions → New repository secret
-#
-#   EC2_HOST        → Your EC2 Public IPv4 DNS
-#                     (looks like ec2-XX-XX-XX-XX.compute-1.amazonaws.com)
-#   EC2_USER        → ec2-user
-#   EC2_PRIVATE_KEY → The contents of your deploy_key (from Lab 9 setup)
-#
-# If you're starting fresh (new fork), re-do the deploy key setup from Lab 9.
-
 name: Deploy to EC2
 
 on:
@@ -47,5 +32,4 @@ jobs:
           sleep 2
           nohup python3 flaskapp.py > flask.log 2>&1 &
           sleep 1
-          echo "Deploy complete. Flask restarted."
           REMOTE

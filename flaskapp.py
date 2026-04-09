@@ -1,15 +1,8 @@
-# author: T. Urness and M. Moore
-# description: Flask example using redirect, url_for, and flash
-# credit: the template html files were constructed with the help of ChatGPT
-
-from flask import Flask
-from flask import render_template
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from dbCode import *
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key' # this is an artifact for using flash displays; 
-                                   # it is required, but you can leave this alone
+app.secret_key = 'your_secret_key'
 
 @app.route('/')
 def home():
@@ -18,47 +11,81 @@ def home():
 @app.route('/add-user', methods=['GET', 'POST'])
 def add_user():
     if request.method == 'POST':
-        # Extract form data
-        name = request.form['name']
-        genre = request.form['genre']
+        artist_id = request.form['artist_id']
+        artist_name = request.form['artist_name']
+        track_name = request.form['track_name']
+        unit_price = request.form['unit_price']
         
-        # Process the data (e.g., add it to a database)
-        # For now, let's just print it to the console
-        print("Name:", name, ":", "Favorite Genre:", genre)
-        
-        flash('User added successfully! Huzzah!', 'success')  # 'success' is a category; makes a green banner at the top
-        # Redirect to home page or another page upon successful submission
-        return redirect(url_for('home'))
+        if add_artist_with_track(int(artist_id), artist_name, track_name, float(unit_price)):
+            item = {
+                'ArtistName': artist_name,
+                'TrackName': track_name,
+                'UnitPrice': unit_price
+            }
+            add_to_dynamodb('ArtistPreferences', item)
+            session['current_artist'] = artist_name
+            flash('Artist added successfully', 'success')
+            return redirect(url_for('home'))
+        else:
+            flash('Failed to add artist', 'error')
+            return render_template('add_user.html')
     else:
-        # Render the form page if the request method is GET
         return render_template('add_user.html')
 
-@app.route('/delete-user',methods=['GET', 'POST'])
+@app.route('/delete-user', methods=['GET', 'POST'])
 def delete_user():
     if request.method == 'POST':
-        # Extract form data
-        name = request.form['name']
-        
-        # Process the data (e.g., add it to a database)
-        # For now, let's just print it to the console
-        print("Name to delete:", name)
-        
-        flash('User deleted successfully! Hoorah!', 'warning') 
-        # Redirect to home page or another page upon successful submission
-        return redirect(url_for('home'))
+        artist_id = request.form['artist_id']
+
+        artist_name = delete_artist_by_id(int(artist_id))
+        if artist_name:
+            delete_from_dynamodb('ArtistPreferences', {'ArtistName': artist_name})
+            if session.get('current_artist') == artist_name:
+                session.pop('current_artist', None)
+            flash('Artist deleted successfully', 'warning')
+            return redirect(url_for('home'))
+        else:
+            flash('Failed to delete artist', 'error')
+            return render_template('delete_user.html')
     else:
-        # Render the form page if the request method is GET
         return render_template('delete_user.html')
 
+@app.route('/update-user', methods=['GET', 'POST'])
+def update_user():
+    if request.method == 'POST':
+        artist_id = request.form['artist_id']
+        artist_name = request.form['artist_name']
+        track_name = request.form['track_name']
+        unit_price = request.form['unit_price']
+
+        old_name = update_artist_by_id(int(artist_id), artist_name, track_name, float(unit_price))
+        if old_name:
+            delete_from_dynamodb('ArtistPreferences', {'ArtistName': old_name})
+            add_to_dynamodb('ArtistPreferences', {
+                'ArtistName': artist_name,
+                'TrackName': track_name,
+                'UnitPrice': unit_price
+            })
+            if session.get('current_artist') == old_name:
+                session['current_artist'] = artist_name
+            flash('Artist updated successfully', 'info')
+            return redirect(url_for('home'))
+        else:
+            flash('Failed to update artist', 'error')
+            return render_template('update_user.html')
+    else:
+        return render_template('update_user.html')
 
 @app.route('/display-users')
 def display_users():
-    # hard code a value to the users_list;
-    # note that this could have been a result from an SQL query :) 
-    users_list = (('John','Doe','Comedy'),('Jane', 'Doe','Drama'))
-    return render_template('display_users.html', users = users_list)
+    users_list = execute_query("""
+        SELECT ArtistId, Artist.Name AS ArtistName, Track.Name AS TrackName, UnitPrice
+        FROM Artist
+        LEFT JOIN Album USING (ArtistId)
+        LEFT JOIN Track USING (AlbumId)
+        ORDER BY Artist.Name
+    """)
+    return render_template('display_users.html', users=users_list)
 
-
-# these two lines of code should always be the last in the file
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True)

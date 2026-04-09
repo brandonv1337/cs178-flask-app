@@ -1,31 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Users List</title>
-    <!-- Bootstrap CSS for styling the table -->
+    <title>Artists & Tracks</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-    <div class="container">
-        <h2 class="mt-5">Users List</h2>
-        <table class="table table-bordered table-striped mt-3">
-            <thead class="thead-dark"> <!-- creates a dark background for the table header -->
-                <tr>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Favorite Genre</th>
-                </tr>
-            </thead>
-            <tbody> <!-- table body -- loop through all of the users -->
-                {% for user in users %}
-                <tr>
-                    <td>{{ user[0] }}</td>
-                    <td>{{ user[1] }}</td>
-                    <td>{{ user[2] }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
- </body>
+<div class="container">
+    <h2 class="mt-5">Artists & Tracks</h2>
+    <table class="table table-bordered table-striped mt-3">
+        <thead class="thead-dark">
+            <th>Artist ID</th>
+<th>Artist Name</th>
+<th>Track Name</th>
+<th>Unit Price</th>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user["ArtistId"] }}</td>
+                <td>{{ user["ArtistName"] }}</td>
+                <td>{{ user["TrackName"] if user["TrackName"] else "N/A" }}</td>
+                <td>{{ "$%.2f"|format(user["UnitPrice"]|float) if user["UnitPrice"] else "N/A" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{{ url_for('home') }}" class="btn btn-secondary mt-3">Back to Home</a>
+</div>
+</body>
 </html>

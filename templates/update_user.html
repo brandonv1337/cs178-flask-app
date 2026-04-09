@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <title>Add New Artist</title>
+    <title>Update Artist</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
   </head>
   <body>
@@ -15,8 +15,8 @@
           {% endfor %}
         {% endif %}
       {% endwith %}
-      <h1>Add New Artist</h1>
-      <form action="{{ url_for('add_user') }}" method="post">
+      <h1>Update Artist</h1>
+      <form action="{{ url_for('update_user') }}" method="post">
         <div class="form-group">
           <label for="artist_id">Artist ID:</label>
           <input type="number" id="artist_id" name="artist_id" class="form-control" required />
@@ -33,7 +33,7 @@
           <label for="unit_price">Unit Price:</label>
           <input type="number" step="0.01" id="unit_price" name="unit_price" class="form-control" required />
         </div>
-        <input type="submit" value="Submit" class="btn btn-primary" />
+        <input type="submit" value="Update" class="btn btn-primary" />
         <a href="{{ url_for('home') }}" class="btn btn-secondary">Cancel</a>
       </form>
     </div>
